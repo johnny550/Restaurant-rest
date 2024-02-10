@@ -2,8 +2,8 @@
 mod tests;
 mod server;
 
-use crate::server::{Order, RestaurantApp};
-use actix_web::{http, web, App, HttpResponse, HttpResponseBuilder, HttpServer, Responder};
+use crate::server::RestaurantApp;
+use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -12,7 +12,6 @@ struct OrderRequest{
     table_number: u32,
 }
 
-// async fn add_order(data: web::Data<RestaurantApp>, info: web::Json<(String, u32)>) -> impl Responder {
 async fn add_order(data: web::Data<RestaurantApp>, info: web::Json<OrderRequest>) -> impl Responder {
     println!("Adding order {:?}", info);
     let OrderRequest{item, table_number} = info.into_inner();
@@ -51,11 +50,10 @@ async fn get_order(data: web::Data<RestaurantApp>, info: web::Json<OrderRequest>
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let app = RestaurantApp::new();
-
+    
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(app.clone()))
-            // .route("/test_endpoint", web::get().to(ep_test::test_endpoint))
             .route("/add_order", web::post().to(add_order))
             .route("/remove_order", web::post().to(remove_order))
             .route("/query_all_orders", web::get().to(query_all_orders))
@@ -65,21 +63,3 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
-
-
-
-// use actix_web::{web, App, HttpResponse, HttpServer};
-
-// async fn test_endpoint() -> HttpResponse {
-//     HttpResponse::Ok().body("Test endpoint works.")
-// }
-
-// #[actix_web::main]
-// async fn main() -> std::io::Result<()> {
-//     HttpServer::new(|| {
-//         App::new().route("/test_endpoint", web::get().to(test_endpoint))
-//     })
-//     .bind("127.0.0.1:8080")?
-//     .run()
-//     .await
-// }

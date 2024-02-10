@@ -1,15 +1,7 @@
-use crate::{get_order, query_all_orders, add_order, remove_order, server::{Order, RestaurantApp}, OrderRequest};
+use crate::{get_order, query_all_orders, add_order, remove_order, server::RestaurantApp};
+use actix_web::{http::{self, header::{self, HeaderValue}}, test, web, App};
+use serde_json::json; // Import serde_json for JSON parsing
 
-// use crate::server::RestaurantApp;
-// use actix_rt::test;
-// use actix_web::{http, web};
-// use actix_web::{HttpResponse, Responder};
-// use actix_web::{http::StatusCode, web};
-
-
-use actix_web::{http::{self, header::{self, HeaderValue}}, web, test, App, HttpResponse};
-use serde_json::{json, Value}; // Import serde_json for JSON parsing
-// #[test]
 #[actix_rt::test]
 async fn test_query_all_orders() {
     // Setup
@@ -34,30 +26,6 @@ async fn test_query_all_orders() {
     
      // Check if the response status is OK (200)
      assert_eq!(response.status(), http::StatusCode::OK, "Returned status code should be 200");
-
-         // figure out how to extract the content of the body
-    //  let body = test::read_body(response).await;
-    //  let orders = match str::from_utf8(&body) {
-    //     Ok(v) => v,
-    //     Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-    // };
-    // println!("body {:?}", orders);
-    // print_type_of(&orders);
-
-
-    // let retrieved: Result<OrderRequest, serde_json::error::Error> = serde_json::from_str(orders);
-    // println!("rst: {:?}", retrieved);
-    
-    // assert!(!orders.is_empty(), "Response body could not be parsed");
-    // assert!(retrieved.is_ok(), "Response body could not be parsed");
-    
-
-    // let orders = retrieved.unwrap();
-
-    // let retrieved= test::read_body(response).await;
-    
-    // println!("body {:?}", body);
-
  
 }
 
@@ -111,8 +79,6 @@ async fn test_add_order() {
     .set_payload(payload.to_string())
     .to_request();
 
-    // println!("req headers {:?}", req.head());
-
     // Perform the test
     let response = test::call_and_read_body(&mut app, req).await;
 
@@ -127,9 +93,9 @@ async fn test_delete_order() {
     let data = web::Data::new(resto.clone());
 
      // Create a test app with the handler function: query_all_orders
-     let mut app = test::init_service(App::new()
-     .app_data(data)
-     .route("/remove_order", web::post().to(remove_order))
+    let mut app = test::init_service(App::new()
+    .app_data(data)
+    .route("/remove_order", web::post().to(remove_order))
     ).await;
 
     // Create a test request to the /all_orders endpoint

@@ -24,7 +24,6 @@ impl RestaurantApp {
     }
 
     pub fn add_order(&self, item: String, table_number: u32) {
-        println!("Adding order");
         let cook_time = rand::thread_rng().gen_range(5..=15);
         let order = Order {
             item,
